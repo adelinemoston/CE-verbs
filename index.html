@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Madame Moston's CE Verbs Practice Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a3a6b;
+    --bg2: #142d56;
+    --card: #1e4080;
+    --card2: #244a94;
+    --red: #c0392b;
+    --red2: #e74c3c;
+    --white: #ffffff;
+    --offwhite: #e8eef8;
+    --teal: #2dd4bf;
+    --gold: #f0c040;
+    --text: #e8eef8;
+    --muted: #a0b4d0;
+    --border: rgba(255,255,255,0.15);
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--bg2) 0%, #0e2240 100%);
+    border-bottom: 4px solid var(--red);
+    padding: 28px 20px 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before, header::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 18px;
+  }
+  header::before { left: 0; background: var(--red); }
+  header::after  { right: 0; background: var(--white); }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header h1 span { color: var(--gold); }
+  header p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+  /* ── TUTORIAL PANEL ── */
+  .tutorial-wrap {
+    margin: 28px 0 0;
+  }
+  .tutorial-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--red);
+    color: var(--white);
+    border: none; cursor: pointer;
+    padding: 14px 20px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .tutorial-toggle:hover { background: var(--red2); }
+  .tutorial-toggle .arrow { font-size: 1.1rem; transition: transform 0.3s; }
+  .tutorial-toggle.open .arrow { transform: rotate(180deg); }
+  .tutorial-body {
+    display: none;
+    background: var(--card2);
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 22px 24px;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+  .tutorial-body.open { display: block; }
+  .tutorial-body h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem; color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .tutorial-body p { color: var(--offwhite); font-size: 0.92rem; line-height: 1.6; margin-bottom: 12px; }
+  .endings-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px; margin: 12px 0 16px;
+  }
+  .endings-card {
+    background: var(--bg2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+  .endings-card .pronoun { color: var(--muted); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .endings-card .ending { font-size: 1.4rem; font-weight: 700; color: var(--white); }
+  .endings-card .ending em { color: var(--red2); font-style: normal; }
+  .endings-card .example { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+  .tip-box {
+    background: rgba(192,57,43,0.18);
+    border-left: 3px solid var(--red2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: var(--offwhite);
+    margin-top: 4px;
+  }
+  .tip-box strong { color: var(--gold); }
+
+  /* ── MODE PICKER ── */
+  .mode-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    color: var(--gold);
+    margin: 28px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .mode-btn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 14px 16px;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    line-height: 1.35;
+  }
+  .mode-btn:hover { border-color: rgba(255,255,255,0.4); background: var(--card2); }
+  .mode-btn.active {
+    border-color: var(--red2);
+    background: rgba(231,76,60,0.18);
+    color: var(--white);
+    transform: translateY(-1px);
+  }
+  .mode-btn .num {
+    display: inline-block;
+    background: var(--red);
+    color: var(--white);
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 0.75rem; font-weight: 700;
+    line-height: 22px; text-align: center;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .mode-btn.active .num { background: var(--red2); }
+  .mode-btn .tag {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 3px;
+    margin-left: 30px;
+  }
+
+  /* ── QUIZ CARD ── */
+  .quiz-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 28px 24px 24px;
+    margin-top: 22px;
+  }
+  .quiz-card.hidden { display: none; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+  }
+  .progress-bar-outer {
+    flex: 1; height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%; background: var(--red2);
+    border-radius: 99px;
+    transition: width 0.4s;
+  }
+  .progress-text { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+
+  .streak-row {
+    display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .stat-chip {
+    background: var(--bg2);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .stat-chip strong { color: var(--white); }
+
+  .prompt-label {
+    font-size: 0.78rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--red2);
+    margin-bottom: 8px;
+  }
+  .prompt-text {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    color: var(--white);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .prompt-sub {
+    font-size: 0.85rem; color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .accent-bar {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .accent-key {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--white);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    padding: 5px 11px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .accent-key:hover { background: var(--card2); transform: translateY(-1px); }
+  .accent-key:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+  .answer-input {
+    width: 100%;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+  .answer-input:focus { border-color: rgba(255,255,255,0.5); }
+  .answer-input.correct { border-color: #2ecc71; background: rgba(46,204,113,0.1); }
+  .answer-input.wrong   { border-color: var(--red2); background: rgba(231,76,60,0.1); }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem; font-weight: 600;
+    padding: 12px 24px;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary { background: var(--red); color: var(--white); }
+  .btn-secondary { background: rgba(255,255,255,0.12); color: var(--white); }
+  .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+  .feedback-box {
+    margin-top: 14px;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    display: none;
+  }
+  .feedback-box.correct { background: rgba(46,204,113,0.14); border: 1px solid rgba(46,204,113,0.4); color: #a8f0c8; }
+  .feedback-box.wrong   { background: rgba(231,76,60,0.14);  border: 1px solid rgba(231,76,60,0.4);  color: #f5b0a8; }
+  .feedback-box strong  { color: var(--white); }
+
+  /* ── RESULTS ── */
+  .results-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 36px 28px;
+    margin-top: 22px;
+    text-align: center;
+    display: none;
+  }
+  .results-card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; color: var(--white);
+    margin-bottom: 8px;
+  }
+  .results-card .score-big {
+    font-size: 3.5rem; font-weight: 700;
+    color: var(--gold);
+    margin: 16px 0 8px;
+  }
+  .results-card .score-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .results-card .btn { margin: 0 auto; }
+
+  /* ── FLAG STRIPE ── */
+  .flag-stripe {
+    display: flex; height: 6px;
+    margin: 28px 0 0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .flag-stripe .s1 { flex: 1; background: var(--bg2); }
+  .flag-stripe .s2 { flex: 1; background: var(--white); }
+  .flag-stripe .s3 { flex: 1; background: var(--red); }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Madame Moston's<br><span>CE Verbs Practice Hub</span></h1>
+  <p>Build your French verb confidence — one tense at a time</p>
+</header>
+
+<div class="container">
+
+  <div class="flag-stripe"><div class="s1"></div><div class="s2"></div><div class="s3"></div></div>
+
+  <!-- TUTORIAL -->
+  <div class="tutorial-wrap">
+    <button class="tutorial-toggle" onclick="toggleTutorial(this)" aria-expanded="false">
+      📖 &nbsp;Remind me of the rules — click to expand
+      <span class="arrow">▼</span>
+    </button>
+    <div class="tutorial-body" id="tutorial-body">
+      <h3>–ER Verb Endings (present tense)</h3>
+      <p>Remove <strong>-er</strong> from the infinitive to get the stem, then add the correct ending:</p>
+      <div class="endings-grid">
+        <div class="endings-card">
+          <div class="pronoun">je (I)</div>
+          <div class="ending">stem + <em>e</em></div>
+          <div class="example">je parl<em>e</em></div>
+        </div>
+        <div class="endings-card">
+          <div class="pronoun">tu (you)</div>
+          <div class="ending">stem + <em>es</em></div>
+          <div class="example">tu parl<em>es</em></div>
+        </div>
+        <div class="endings-card">
+          <div class="pronoun">il / elle (he/she)</div>
+          <div class="ending">stem + <em>e</em></div>
+          <div class="example">il parl<em>e</em></div>
+        </div>
+        <div class="endings-card">
+          <div class="pronoun">nous (we)</div>
+          <div class="ending">stem + <em>ons</em></div>
+          <div class="example">nous parl<em>ons</em></div>
+        </div>
+        <div class="endings-card">
+          <div class="pronoun">vous (you pl.)</div>
+          <div class="ending">stem + <em>ez</em></div>
+          <div class="example">vous parl<em>ez</em></div>
+        </div>
+        <div class="endings-card">
+          <div class="pronoun">ils / elles (they)</div>
+          <div class="ending">stem + <em>ent</em></div>
+          <div class="example">ils parl<em>ent</em></div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <strong>⚠ Spelling tweaks:</strong> Verbs like <em>manger</em> → <em>nous mangeons</em> (keep the soft g).
+        Verbs like <em>préférer</em> → <em>je préfère</em> (é → è before a silent ending).
+        Verbs starting with a vowel: <em>j'écoute</em>, <em>j'aime</em> (je shortens to j').
+        Reflexive verbs (<em>se lever, se laver</em>): add the reflexive pronoun → <em>je me lève, tu te lèves</em>.
+      </div>
+
+      <h3 style="margin-top:20px">Near Future (futur proche)</h3>
+      <p>Use the present tense of <strong>aller</strong> + infinitive:</p>
+      <div class="endings-grid">
+        <div class="endings-card"><div class="pronoun">je</div><div class="ending" style="font-size:1.1rem">je vais + inf.</div><div class="example">je vais parler</div></div>
+        <div class="endings-card"><div class="pronoun">tu</div><div class="ending" style="font-size:1.1rem">tu vas + inf.</div><div class="example">tu vas jouer</div></div>
+        <div class="endings-card"><div class="pronoun">il/elle</div><div class="ending" style="font-size:1.1rem">il va + inf.</div><div class="example">elle va chanter</div></div>
+        <div class="endings-card"><div class="pronoun">nous</div><div class="ending" style="font-size:1.1rem">nous allons + inf.</div><div class="example">nous allons écouter</div></div>
+        <div class="endings-card"><div class="pronoun">vous</div><div class="ending" style="font-size:1.1rem">vous allez + inf.</div><div class="example">vous allez regarder</div></div>
+        <div class="endings-card"><div class="pronoun">ils/elles</div><div class="ending" style="font-size:1.1rem">ils vont + inf.</div><div class="example">ils vont travailler</div></div>
+      </div>
+      <div class="tip-box"><strong>📌 Reflexive in near future:</strong> The reflexive pronoun stays with the infinitive → <em>je vais me lever, elle va se laver</em></div>
+
+      <h3 style="margin-top:20px">Passé Composé (perfect tense)</h3>
+      <p>For regular –ER verbs: present tense of <strong>avoir</strong> + past participle (remove –er, add –é):</p>
+      <div class="endings-grid">
+        <div class="endings-card"><div class="pronoun">je</div><div class="ending" style="font-size:1.1rem">j'ai + pp</div><div class="example">j'ai parlé</div></div>
+        <div class="endings-card"><div class="pronoun">tu</div><div class="ending" style="font-size:1.1rem">tu as + pp</div><div class="example">tu as joué</div></div>
+        <div class="endings-card"><div class="pronoun">il/elle</div><div class="ending" style="font-size:1.1rem">il a + pp</div><div class="example">elle a chanté</div></div>
+        <div class="endings-card"><div class="pronoun">nous</div><div class="ending" style="font-size:1.1rem">nous avons + pp</div><div class="example">nous avons écouté</div></div>
+        <div class="endings-card"><div class="pronoun">vous</div><div class="ending" style="font-size:1.1rem">vous avez + pp</div><div class="example">vous avez regardé</div></div>
+        <div class="endings-card"><div class="pronoun">ils/elles</div><div class="ending" style="font-size:1.1rem">ils ont + pp</div><div class="example">ils ont travaillé</div></div>
+      </div>
+      <div class="tip-box">
+        <strong>📌 Reflexive in passé composé:</strong> Use <em>être</em> → <em>je me suis levé(e), elle s'est lavée</em><br>
+        <strong>📌 Vowel start:</strong> j'ai + vowel stays as j'ai → <em>j'ai écouté, j'ai aidé</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODE SELECTOR -->
+  <div class="mode-label">Choose an activity:</div>
+  <div class="mode-grid" id="mode-grid">
+    <button class="mode-btn" onclick="selectMode(0,this)">
+      <span class="num">1</span>French → English
+      <span class="tag">Infinitive translations</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(1,this)">
+      <span class="num">2</span>English → French
+      <span class="tag">Infinitive translations</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(2,this)">
+      <span class="num">3</span>être, avoir, aller, faire
+      <span class="tag">Present tense</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(3,this)">
+      <span class="num">4</span>–ER Verbs: Present
+      <span class="tag">All pronouns</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(4,this)">
+      <span class="num">5</span>–ER Verbs: Near Future
+      <span class="tag">futur proche</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(5,this)">
+      <span class="num">6</span>–ER Verbs: Passé Composé
+      <span class="tag">perfect tense</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode(6,this)">
+      <span class="num">7</span>Mixed Tenses
+      <span class="tag">Present, near future & passé composé</span>
+    </button>
+  </div>
+
+  <!-- QUIZ AREA -->
+  <div class="quiz-card hidden" id="quiz-card">
+    <div class="progress-row">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="prog-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="prog-text">0 / 0</div>
+    </div>
+    <div class="streak-row">
+      <div class="stat-chip">🔥 Streak: <strong id="streak-val">0</strong></div>
+      <div class="stat-chip">✅ Correct: <strong id="correct-val">0</strong></div>
+      <div class="stat-chip">❌ Wrong: <strong id="wrong-val">0</strong></div>
+    </div>
+
+    <div class="prompt-label" id="prompt-label">Translate into English:</div>
+    <div class="prompt-text" id="prompt-text">—</div>
+    <div class="prompt-sub" id="prompt-sub"></div>
+
+    <div class="accent-bar" id="accent-bar">
+      <button class="accent-key" onclick="insertAccent('é')" tabindex="-1">é</button>
+      <button class="accent-key" onclick="insertAccent('è')" tabindex="-1">è</button>
+      <button class="accent-key" onclick="insertAccent('ê')" tabindex="-1">ê</button>
+    </div>
+
+    <input type="text" class="answer-input" id="answer-input"
+           placeholder="Type your answer…"
+           onkeydown="if(event.key==='Enter') handleSubmit()">
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="submit-btn" onclick="handleSubmit()">Check ✓</button>
+      <button class="btn btn-secondary" id="next-btn" onclick="nextQuestion()" style="display:none">Next →</button>
+      <button class="btn btn-secondary" id="skip-btn" onclick="skipQuestion()">Skip</button>
+    </div>
+
+    <div class="feedback-box" id="feedback-box"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-card" id="results-card">
+    <div style="font-size:3rem">🎉</div>
+    <h2>Well done!</h2>
+    <div class="score-big" id="result-score">—</div>
+    <div class="score-sub" id="result-sub"></div>
+    <button class="btn btn-primary" onclick="restartMode()">Play again ↺</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ────────────────────────────────────────────────
+   DATA
+──────────────────────────────────────────────── */
+
+// ER verbs list (bare infinitive without "se")
+const ER_VERBS = [
+  {fr:"chercher",  en:"to look for / search"},
+  {fr:"visiter",   en:"to visit"},
+  {fr:"manger",    en:"to eat"},
+  {fr:"acheter",   en:"to buy"},
+  {fr:"habiter",   en:"to live (in)"},
+  {fr:"jouer",     en:"to play"},
+  {fr:"chanter",   en:"to sing"},
+  {fr:"nager",     en:"to swim"},
+  {fr:"bavarder",  en:"to chat"},
+  {fr:"parler",    en:"to speak / talk"},
+  {fr:"regarder",  en:"to watch / look at"},
+  {fr:"adorer",    en:"to love / adore"},
+  {fr:"aimer",     en:"to like / love"},
+  {fr:"détester",  en:"to hate"},
+  {fr:"préférer",  en:"to prefer"},
+  {fr:"donner",    en:"to give"},
+  {fr:"demander",  en:"to ask (for)"},
+  {fr:"loger",     en:"to stay / lodge"},
+  {fr:"porter",    en:"to wear / carry"},
+  {fr:"travailler",en:"to work"},
+  {fr:"se lever",  en:"to get up", refl:true},
+  {fr:"se laver",  en:"to wash (oneself)", refl:true},
+  {fr:"écouter",   en:"to listen (to)"},
+  {fr:"étudier",   en:"to study"},
+  {fr:"aider",     en:"to help"},
+];
+
+// Irregular key verbs for mode 2 (présent)
+const KEY_VERBS = [
+  // être
+  {fr:"être",   en:"to be"},
+  // avoir
+  {fr:"avoir",  en:"to have"},
+  // aller
+  {fr:"aller",  en:"to go"},
+  // faire
+  {fr:"faire",  en:"to do / make"},
+];
+
+// All infinitives (ER + key) for modes 1 & 2
+const ALL_INF = [...ER_VERBS, ...KEY_VERBS];
+
+// Pronouns
+const PRONOUNS = ["je","tu","il","elle","nous","vous","ils","elles"];
+
+const EN_PR = {je:"I",tu:"you",il:"he",elle:"she",nous:"we",vous:"you",ils:"they",elles:"they"};
+
+// ── Present tense conjugations ──
+
+// être
+const ETRE = {je:"suis",tu:"es",il:"est",elle:"est",nous:"sommes",vous:"êtes",ils:"sont",elles:"sont"};
+// avoir
+const AVOIR = {je:"ai",tu:"as",il:"a",elle:"a",nous:"avons",vous:"avez",ils:"ont",elles:"ont"};
+// aller
+const ALLER = {je:"vais",tu:"vas",il:"va",elle:"va",nous:"allons",vous:"allez",ils:"vont",elles:"vont"};
+// faire
+const FAIRE = {je:"fais",tu:"fais",il:"fait",elle:"fait",nous:"faisons",vous:"faites",ils:"font",elles:"font"};
+
+function isVowelStart(s) { return /^[aeéèêiouàâîô]/i.test(s); }
+
+// Build present tense for a verb + pronoun
+function presentER(verb, pronoun) {
+  if (verb.refl) {
+    // e.g. se lever → je me lève
+    const bare = verb.fr.replace(/^se /, "");
+    const stem = getStem(bare);
+    const ending = erEnding(stem, pronoun);
+    const conj = applyEnding(stem, bare, pronoun, ending);
+    const refMap = {je:"me",tu:"te",il:"se",elle:"se",nous:"nous",vous:"vous",ils:"se",elles:"se"};
+    const ref = refMap[pronoun];
+    let pr = pronoun;
+    // elision: je + me → je me (no elision here), but je me lève → check conj vowel start
+    // Actually reflexive pronoun elision: me/te/se before vowel
+    let refStr;
+    if (isVowelStart(conj) && (ref==="me"||ref==="te"||ref==="se")) {
+      refStr = ref.slice(0,-1) + "'";
+    } else {
+      refStr = ref + " ";
+    }
+    // pronoun elision before reflexive
+    if (pr==="je" && isVowelStart(refStr)) {
+      pr = "j'";
+      return pr + refStr + conj;
+    }
+    return pr + " " + refStr + conj;
+  }
+  const stem = getStem(verb.fr);
+  const ending = erEnding(stem, pronoun);
+  const conj = applyEnding(stem, verb.fr, pronoun, ending);
+  if (pronoun==="je" && isVowelStart(conj)) return "j'" + conj;
+  return pronoun + " " + conj;
+}
+
+function getStem(inf) {
+  return inf.replace(/er$/i, "");
+}
+
+function erEnding(stem, pronoun) {
+  const map = {je:"e",tu:"es",il:"e",elle:"e",nous:"ons",vous:"ez",ils:"ent",elles:"ent"};
+  return map[pronoun];
+}
+
+function applyEnding(stem, inf, pronoun, ending) {
+  // manger / nager / loger: nous → mangeons (soft g)
+  if ((inf==="manger"||inf==="nager"||inf==="loger") && pronoun==="nous") {
+    return stem + "e" + ending;
+  }
+  // acheter: je/tu/il/elle/ils/elles → achète (è)
+  if (inf==="acheter") {
+    const singPlur = ["je","tu","il","elle","ils","elles"];
+    if (singPlur.includes(pronoun)) return "achèt" + ending;
+    return stem + ending; // nous achetons, vous achetez
+  }
+  // préférer: je/tu/il/elle/ils/elles → préfère (é→è)
+  if (inf==="préférer") {
+    const singPlur = ["je","tu","il","elle","ils","elles"];
+    if (singPlur.includes(pronoun)) return "préfèr" + ending;
+    return "préfér" + ending; // nous préférons, vous préférez
+  }
+  // lever / laver: e→è before silent ending (je/tu/il/elle/ils/elles)
+  // stem "lev" → "lèv", stem "lav" → "lèv"... actually lav → lèv no
+  // lever: lev + e = lève; nous levons fine; laver: lav + e = lave (no change needed)
+  // Wait: lever je lève (è), but laver je lave (no change) — standard rule:
+  // e+consonant+er: e→è before silent ending. lever yes, laver no (a not e)
+  if (inf==="lever") {
+    const singPlur = ["je","tu","il","elle","ils","elles"];
+    if (singPlur.includes(pronoun)) return "lèv" + ending;
+    return stem + ending; // nous levons
+  }
+  return stem + ending;
+}
+
+// Build near future
+function nearFuture(verb, pronoun) {
+  const aller = ALLER[pronoun];
+  const pr = pronoun==="je" && isVowelStart(aller) ? "j'" : pronoun + " ";
+  const inf = verb.fr; // full infinitive, including "se"
+  if (verb.refl) {
+    // je vais me lever
+    const bare = inf.replace(/^se /, "");
+    const refMap = {je:"me",tu:"te",il:"se",elle:"se",nous:"nous",vous:"vous",ils:"se",elles:"se"};
+    const ref = refMap[pronoun];
+    return pr + aller + " " + ref + " " + bare;
+  }
+  return pr + aller + " " + inf;
+}
+
+// Build passé composé (all ER → avoir + pp-é)
+function passeCompose(verb, pronoun) {
+  if (verb.refl) {
+    // être auxiliary
+    const aux = ETRE[pronoun];
+    const refMap = {je:"me",tu:"te",il:"se",elle:"se",nous:"nous",vous:"vous",ils:"se",elles:"se"};
+    const ref = refMap[pronoun];
+    const bare = verb.fr.replace(/^se /, "");
+    const pp = bare.replace(/er$/i, "é");
+    let refStr;
+    if (isVowelStart(aux) && (ref==="me"||ref==="te"||ref==="se")) {
+      refStr = ref.slice(0,-1) + "'";
+    } else {
+      refStr = ref + " ";
+    }
+    let pr = pronoun;
+    if (pr==="je" && isVowelStart(refStr)) {
+      return "j'" + refStr + aux + " " + pp;
+    }
+    return pr + " " + refStr + aux + " " + pp;
+  }
+  // avoir auxiliary
+  const aux = AVOIR[pronoun];
+  const pp = verb.fr.replace(/er$/i, "é");
+  if (pronoun==="je" && isVowelStart(aux)) return "j'" + aux + " " + pp;
+  return pronoun + " " + aux + " " + pp;
+}
+
+// Key verb present tense
+function keyVerbPresent(verbFr, pronoun) {
+  let conj;
+  if (verbFr==="être")  conj = ETRE[pronoun];
+  if (verbFr==="avoir") conj = AVOIR[pronoun];
+  if (verbFr==="aller") conj = ALLER[pronoun];
+  if (verbFr==="faire") conj = FAIRE[pronoun];
+  if (pronoun==="je" && isVowelStart(conj)) return "j'" + conj;
+  return pronoun + " " + conj;
+}
+
+// English phrase for full conjugation questions
+function engPhrase(verb, pronoun, tense) {
+  const pr = EN_PR[pronoun];
+  const base = verb.en.replace(/^to /, "").split(" / ")[0].trim();
+  if (tense==="present") return pr + " " + base;
+  if (tense==="nearfuture") return pr + " " + "am going to " + base;
+  if (tense==="pc") {
+    // simple past-ish: "I talked"
+    const words = base.split(" ");
+    words[0] = toPastEng(words[0]);
+    return pr + " " + words.join(" ");
+  }
+}
+
+const IRREG_PAST_ENG = {
+  eat:"ate",swim:"swam",buy:"bought",give:"gave",
+  wear:"wore",carry:"carried"
+};
+function toPastEng(word) {
+  if (IRREG_PAST_ENG[word]) return IRREG_PAST_ENG[word];
+  if (word.endsWith("e")) return word + "d";
+  if (/[^aeiou]y$/.test(word)) return word.slice(0,-1) + "ied";
+  // double consonant for CVC?
+  return word + "ed";
+}
+
+// Key verb English prompts for mode 2
+function keyEngPhrase(verbFr, pronoun) {
+  const pr = EN_PR[pronoun];
+  if (verbFr==="être")  {
+    return pr + " " + ((pronoun==="je"||pronoun==="il"||pronoun==="elle"||pronoun==="on") ? "am/is" : "are");
+  }
+  if (verbFr==="avoir") return pr + " have";
+  if (verbFr==="aller") return pr + " go";
+  if (verbFr==="faire") return pr + " do/make";
+}
+
+/* ────────────────────────────────────────────────
+   QUESTION BUILDERS
+──────────────────────────────────────────────── */
+
+function buildQ_frEn(verb) {
+  return {
+    type:"fr-en",
+    prompt: verb.fr,
+    promptLabel: "What does this mean in English?",
+    promptSub: "",
+    answer: verb.en,
+    explanation: `<strong>${verb.fr}</strong> = ${verb.en}`
+  };
+}
+
+function buildQ_enFr(verb) {
+  return {
+    type:"en-fr",
+    prompt: verb.en.replace(/^to /,"").split("/")[0].trim(),
+    promptLabel: "Give the French infinitive:",
+    promptSub: "",
+    answer: verb.fr,
+    explanation: `${verb.en} = <strong>${verb.fr}</strong>`
+  };
+}
+
+function buildQ_keyPresent(verb, pronoun) {
+  const frAns = keyVerbPresent(verb.fr, pronoun);
+  const engQ  = keyEngPhrase(verb.fr, pronoun);
+  return {
+    type:"key-present",
+    prompt: engQ,
+    promptLabel: "Write in French (present tense):",
+    promptSub: `(${verb.fr})`,
+    answer: frAns,
+    explanation: `<strong>${engQ}</strong> → <strong>${frAns}</strong>`
+  };
+}
+
+function buildQ_erPresent(verb, pronoun) {
+  const frAns = presentER(verb, pronoun);
+  const engQ  = engPhrase(verb, pronoun, "present");
+  return {
+    type:"er-present",
+    prompt: engQ,
+    promptLabel: "Write in French (present tense):",
+    promptSub: `(${verb.fr})`,
+    answer: frAns,
+    explanation: `<strong>${engQ}</strong> → <strong>${frAns}</strong>`
+  };
+}
+
+function buildQ_nearFuture(verb, pronoun) {
+  const frAns = nearFuture(verb, pronoun);
+  const engQ  = engPhrase(verb, pronoun, "nearfuture");
+  return {
+    type:"near-future",
+    prompt: engQ,
+    promptLabel: "Write in French (near future):",
+    promptSub: `(${verb.fr})`,
+    answer: frAns,
+    explanation: `<strong>${engQ}</strong> → <strong>${frAns}</strong>`
+  };
+}
+
+function buildQ_pc(verb, pronoun) {
+  const frAns = passeCompose(verb, pronoun);
+  const engQ  = engPhrase(verb, pronoun, "pc");
+  return {
+    type:"pc",
+    prompt: engQ,
+    promptLabel: "Write in French (passé composé):",
+    promptSub: `(${verb.fr})`,
+    answer: frAns,
+    explanation: `<strong>${engQ}</strong> → <strong>${frAns}</strong>`
+  };
+}
+
+/* ────────────────────────────────────────────────
+   MODE CONFIGS
+──────────────────────────────────────────────── */
+
+// Generate question pool for each mode
+function generatePool(mode) {
+  let qs = [];
+  if (mode===0) {
+    // fr → en, all verbs
+    ALL_INF.forEach(v => qs.push(buildQ_frEn(v)));
+  }
+  else if (mode===1) {
+    // en → fr, all verbs
+    ALL_INF.forEach(v => qs.push(buildQ_enFr(v)));
+  }
+  else if (mode===2) {
+    // key verbs present tense
+    KEY_VERBS.forEach(v => {
+      PRONOUNS.forEach(pr => qs.push(buildQ_keyPresent(v, pr)));
+    });
+  }
+  else if (mode===3) {
+    // ER present tense
+    ER_VERBS.forEach(v => {
+      PRONOUNS.forEach(pr => qs.push(buildQ_erPresent(v, pr)));
+    });
+  }
+  else if (mode===4) {
+    // near future (ER + aller + faire only, no être/avoir)
+    const nfVerbs = ER_VERBS.concat([
+      {fr:"aller",en:"to go"},
+      {fr:"faire",en:"to do / make"},
+    ]);
+    nfVerbs.forEach(v => {
+      PRONOUNS.forEach(pr => qs.push(buildQ_nearFuture(v, pr)));
+    });
+  }
+  else if (mode===5) {
+    // passé composé (ER only, no être/avoir/aller/faire)
+    ER_VERBS.forEach(v => {
+      PRONOUNS.forEach(pr => qs.push(buildQ_pc(v, pr)));
+    });
+  }
+  else if (mode===6) {
+    // mixed: present + near future + pc (ER verbs only)
+    ER_VERBS.forEach(v => {
+      PRONOUNS.forEach(pr => {
+        qs.push(buildQ_erPresent(v, pr));
+        qs.push(buildQ_nearFuture(v, pr));
+        qs.push(buildQ_pc(v, pr));
+      });
+    });
+  }
+  // Shuffle
+  for (let i=qs.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [qs[i],qs[j]]=[qs[j],qs[i]];
+  }
+  // Cap at 30 for manageability
+  return qs.slice(0, 30);
+}
+
+/* ────────────────────────────────────────────────
+   GAME STATE
+──────────────────────────────────────────────── */
+let pool=[], idx=0, streak=0, correct=0, wrong=0, total=0;
+let answered=false, currentMode=-1;
+const RETRY_CHANCE=0.4;
+let retryQueue=[];
+
+function selectMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  startMode(mode);
+}
+
+function startMode(mode) {
+  pool = generatePool(mode);
+  retryQueue = [];
+  idx = 0; streak=0; correct=0; wrong=0; total=pool.length;
+  answered=false;
+  document.getElementById('results-card').style.display='none';
+  document.getElementById('quiz-card').classList.remove('hidden');
+  updateStats();
+  showQuestion();
+}
+
+function restartMode() {
+  startMode(currentMode);
+}
+
+function updateStats() {
+  document.getElementById('streak-val').textContent=streak;
+  document.getElementById('correct-val').textContent=correct;
+  document.getElementById('wrong-val').textContent=wrong;
+  const done=correct+wrong;
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-text').textContent=done+' / '+total;
+}
+
+function currentQ() {
+  // intersperse retry queue
+  if (retryQueue.length>0 && Math.random()<RETRY_CHANCE) {
+    return retryQueue.shift();
+  }
+  return pool[idx];
+}
+let _currentQ=null;
+
+function showQuestion() {
+  if (idx>=pool.length && retryQueue.length===0) {
+    showResults(); return;
+  }
+  _currentQ = (retryQueue.length>0 && Math.random()<RETRY_CHANCE)
+    ? retryQueue.shift()
+    : (idx<pool.length ? pool[idx] : retryQueue.shift());
+
+  const q=_currentQ;
+  document.getElementById('prompt-label').textContent=q.promptLabel;
+  document.getElementById('prompt-text').textContent=q.prompt;
+  document.getElementById('prompt-sub').textContent=q.promptSub||'';
+
+  const inp=document.getElementById('answer-input');
+  inp.value='';
+  inp.className='answer-input';
+  inp.disabled=false;
+  inp.focus();
+  answered=false;
+
+  const fb=document.getElementById('feedback-box');
+  fb.style.display='none';
+  fb.className='feedback-box';
+
+  document.getElementById('submit-btn').style.display='';
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('skip-btn').style.display='';
+
+  setAccentKeysDisabled(false);
+}
+
+function handleSubmit() {
+  if(answered) { nextQuestion(); return; }
+  const inp=document.getElementById('answer-input');
+  const ua=inp.value.trim();
+  if(!ua) return;
+  answered=true;
+  const q=_currentQ;
+  const ok=checkAnswer(q,ua);
+  inp.className='answer-input '+(ok?'correct':'wrong');
+  inp.disabled=true;
+  setAccentKeysDisabled(true);
+
+  const fb=document.getElementById('feedback-box');
+  fb.style.display='block';
+  if(ok) {
+    streak++; correct++;
+    fb.className='feedback-box correct';
+    fb.innerHTML='✅ Correct! ' + q.explanation;
+  } else {
+    streak=0; wrong++;
+    fb.className='feedback-box wrong';
+    fb.innerHTML='❌ Not quite. The answer is: ' + q.explanation;
+    // add to retry
+    retryQueue.push(q);
+  }
+  updateStats();
+
+  document.getElementById('submit-btn').style.display='none';
+  document.getElementById('next-btn').style.display='';
+  document.getElementById('skip-btn').style.display='none';
+
+  if(_currentQ===pool[idx]) idx++;
+}
+
+function nextQuestion() {
+  if(idx>=pool.length && retryQueue.length===0) { showResults(); return; }
+  showQuestion();
+}
+
+function skipQuestion() {
+  if(answered) return;
+  if(_currentQ===pool[idx]) idx++;
+  if(idx>=pool.length && retryQueue.length===0) { showResults(); return; }
+  showQuestion();
+}
+
+function showResults() {
+  document.getElementById('quiz-card').classList.add('hidden');
+  const r=document.getElementById('results-card');
+  r.style.display='block';
+  const total2=correct+wrong;
+  const pct=total2>0?Math.round(correct/total2*100):0;
+  document.getElementById('result-score').textContent=correct+' / '+total2;
+  document.getElementById('result-sub').textContent=pct+'% accuracy — '+medal(pct);
+}
+
+function medal(pct) {
+  if(pct>=90) return '🥇 Excellent!';
+  if(pct>=70) return '🥈 Good work!';
+  if(pct>=50) return '🥉 Keep practising!';
+  return '📚 Revise and try again!';
+}
+
+/* ────────────────────────────────────────────────
+   ANSWER CHECKING
+──────────────────────────────────────────────── */
+
+function norm(s) { return s.trim().toLowerCase(); }
+function deaccent(s) {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+}
+function normStrict(s) { return s.trim().toLowerCase(); }
+
+function checkAnswer(q, ua) {
+  const ans=q.answer;
+  if(q.type==="fr-en") {
+    // accept any alternative, strip "to ", strip brackets
+    const uaN=ua.toLowerCase().replace(/\s*\([^)]*\)/g,'').replace(/^to /,'').trim();
+    const alts=ans.replace(/\s*\([^)]*\)/g,'').split('/').map(a=>a.replace(/^to /,'').trim().toLowerCase());
+    return alts.some(a=>uaN===a);
+  }
+  if(q.type==="en-fr") {
+    return normStrict(ua)===normStrict(ans);
+  }
+  // All conjugation types: deaccented comparison (accent typo leniency)
+  if(deaccent(ua)===deaccent(ans)) return true;
+  // Also accept exact match
+  return normStrict(ua)===normStrict(ans);
+}
+
+/* ────────────────────────────────────────────────
+   ACCENT KEYS
+──────────────────────────────────────────────── */
+
+function insertAccent(char) {
+  const inp=document.getElementById('answer-input');
+  if(inp.disabled) return;
+  const s=inp.selectionStart, e=inp.selectionEnd;
+  inp.value=inp.value.slice(0,s)+char+inp.value.slice(e);
+  inp.selectionStart=inp.selectionEnd=s+1;
+  inp.focus();
+}
+
+function setAccentKeysDisabled(d) {
+  document.querySelectorAll('.accent-key').forEach(k=>{k.disabled=d;});
+}
+
+/* ────────────────────────────────────────────────
+   TUTORIAL TOGGLE
+──────────────────────────────────────────────── */
+
+function toggleTutorial(btn) {
+  const body=document.getElementById('tutorial-body');
+  const open=body.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  btn.setAttribute('aria-expanded', open);
+}
+
+</script>
+</body>
+</html>
