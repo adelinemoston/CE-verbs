@@ -419,8 +419,23 @@
     </div>
   </div>
 
+  <!-- VOCAB LIST BUTTON -->
+  <div style="margin-top:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div class="mode-label" style="margin:0">Choose an activity:</div>
+    <button class="btn btn-secondary" onclick="toggleVocab()" id="vocab-btn" style="font-size:0.88rem; padding:9px 18px;">📋 Vocabulary list</button>
+  </div>
+
+  <!-- VOCAB PANEL -->
+  <div id="vocab-panel" style="display:none; margin-top:16px; background:var(--card2); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+      <h3 style="font-family:'Fraunces',serif; color:var(--gold); font-size:1.1rem;">CE Verb List</h3>
+      <button onclick="toggleVocab()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;line-height:1;">✕</button>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:6px;" id="vocab-grid"></div>
+  </div>
+
   <!-- MODE SELECTOR -->
-  <div class="mode-label">Choose an activity:</div>
+  <div class="mode-label" style="margin-top:20px">Choose an activity:</div>
   <div class="mode-grid" id="mode-grid">
     <button class="mode-btn" onclick="selectMode(0,this)">
       <span class="num">1</span>French → English
@@ -693,14 +708,37 @@ function keyVerbPresent(verbFr, pronoun) {
   return pronoun + " " + conj;
 }
 
+// Add -s/-es for 3rd person singular present
+function thirdPersonS(verb) {
+  // verb is the bare English verb (no "to")
+  if (/[sxzh]$/.test(verb) || /[aeiou]h$/.test(verb)) return verb + "es"; // watches, does, goes
+  if (/[^aeiou]y$/.test(verb)) return verb.slice(0,-1) + "ies"; // carries
+  return verb + "s";
+}
+
+const THIRD_SG = ["il","elle"];
+const NEAR_FUT_AUX = {
+  je:"am going to", tu:"are going to",
+  il:"is going to", elle:"is going to",
+  nous:"are going to", vous:"are going to",
+  ils:"are going to", elles:"are going to"
+};
+
 // English phrase for full conjugation questions
 function engPhrase(verb, pronoun, tense) {
   const pr = EN_PR[pronoun];
   const base = verb.en.replace(/^to /, "").split(" / ")[0].trim();
-  if (tense==="present") return pr + " " + base;
-  if (tense==="nearfuture") return pr + " " + "am going to " + base;
+  if (tense==="present") {
+    if (THIRD_SG.includes(pronoun)) {
+      const words = base.split(" ");
+      words[0] = thirdPersonS(words[0]);
+      return pr + " " + words.join(" ");
+    }
+    return pr + " " + base;
+  }
+  if (tense==="nearfuture") return pr + " " + NEAR_FUT_AUX[pronoun] + " " + base;
   if (tense==="pc") {
-    // simple past-ish: "I talked"
+    // simple past: "I talked"
     const words = base.split(" ");
     words[0] = toPastEng(words[0]);
     return pr + " " + words.join(" ");
@@ -722,12 +760,23 @@ function toPastEng(word) {
 // Key verb English prompts for mode 2
 function keyEngPhrase(verbFr, pronoun) {
   const pr = EN_PR[pronoun];
-  if (verbFr==="être")  {
-    return pr + " " + ((pronoun==="je"||pronoun==="il"||pronoun==="elle"||pronoun==="on") ? "am/is" : "are");
+  if (verbFr==="être") {
+    if (pronoun==="je")   return pr + " am";
+    if (pronoun==="il" || pronoun==="elle") return pr + " is";
+    return pr + " are";
   }
-  if (verbFr==="avoir") return pr + " have";
-  if (verbFr==="aller") return pr + " go";
-  if (verbFr==="faire") return pr + " do/make";
+  if (verbFr==="avoir") {
+    if (THIRD_SG.includes(pronoun)) return pr + " has";
+    return pr + " have";
+  }
+  if (verbFr==="aller") {
+    if (THIRD_SG.includes(pronoun)) return pr + " goes";
+    return pr + " go";
+  }
+  if (verbFr==="faire") {
+    if (THIRD_SG.includes(pronoun)) return pr + " does/makes";
+    return pr + " do/make";
+  }
 }
 
 /* ────────────────────────────────────────────────
@@ -746,9 +795,11 @@ function buildQ_frEn(verb) {
 }
 
 function buildQ_enFr(verb) {
+  // Show full "to …" form as the prompt
+  const enDisplay = verb.en.split("/")[0].trim(); // keep "to " prefix
   return {
     type:"en-fr",
-    prompt: verb.en.replace(/^to /,"").split("/")[0].trim(),
+    prompt: enDisplay,
     promptLabel: "Give the French infinitive:",
     promptSub: "",
     answer: verb.fr,
@@ -1067,6 +1118,28 @@ function insertAccent(char) {
 
 function setAccentKeysDisabled(d) {
   document.querySelectorAll('.accent-key').forEach(k=>{k.disabled=d;});
+}
+
+/* ────────────────────────────────────────────────
+   VOCABULARY LIST
+──────────────────────────────────────────────── */
+
+(function buildVocabGrid() {
+  const grid = document.getElementById('vocab-grid');
+  ALL_INF.forEach(v => {
+    const el = document.createElement('div');
+    el.style.cssText = 'background:var(--bg2);border-radius:8px;padding:8px 12px;border:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;font-size:0.88rem;';
+    el.innerHTML = `<span style="color:var(--white);font-weight:600">${v.fr}</span><span style="color:var(--muted);text-align:right">${v.en}</span>`;
+    grid.appendChild(el);
+  });
+})();
+
+function toggleVocab() {
+  const panel = document.getElementById('vocab-panel');
+  const btn   = document.getElementById('vocab-btn');
+  const open  = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  btn.textContent = open ? '✕ Close list' : '📋 Vocabulary list';
 }
 
 /* ────────────────────────────────────────────────
