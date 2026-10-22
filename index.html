@@ -552,7 +552,7 @@ const ALL_INF = [...ER_VERBS, ...KEY_VERBS];
 // Pronouns
 const PRONOUNS = ["je","tu","il","elle","nous","vous","ils","elles"];
 
-const EN_PR = {je:"I",tu:"you",il:"he",elle:"she",nous:"we",vous:"you",ils:"they",elles:"they"};
+const EN_PR = {je:"I",tu:"you (sg.)",il:"he",elle:"she",nous:"we",vous:"you (pl.)",ils:"they (m.)",elles:"they (f.)"};
 
 // ── Present tense conjugations ──
 
@@ -1026,10 +1026,22 @@ function normStrict(s) { return s.trim().toLowerCase(); }
 function checkAnswer(q, ua) {
   const ans=q.answer;
   if(q.type==="fr-en") {
-    // accept any alternative, strip "to ", strip brackets
-    const uaN=ua.toLowerCase().replace(/\s*\([^)]*\)/g,'').replace(/^to /,'').trim();
-    const alts=ans.replace(/\s*\([^)]*\)/g,'').split('/').map(a=>a.replace(/^to /,'').trim().toLowerCase());
-    return alts.some(a=>uaN===a);
+    // Normalise user answer: lowercase, strip "to ", remove any brackets+content
+    const uaN = ua.toLowerCase().replace(/\s*\([^)]*\)/g,'').replace(/^to /,'').trim();
+    // Build accepted alternatives from the stored answer:
+    // e.g. "to wash (oneself)" → accept "wash", "wash oneself", "to wash", "to wash oneself"
+    // Split on "/" first, then for each part generate: with-bracket-content and without
+    const parts = ans.split('/').map(s => s.trim());
+    const alts = new Set();
+    parts.forEach(part => {
+      // version with brackets stripped
+      const bare = part.replace(/\s*\([^)]*\)/g,'').replace(/^to /,'').trim().toLowerCase();
+      alts.add(bare);
+      // version with bracket content inlined (no brackets)
+      const inline = part.replace(/\s*\(([^)]*)\)/g,' $1').replace(/^to /,'').trim().replace(/\s+/g,' ').toLowerCase();
+      alts.add(inline);
+    });
+    return [...alts].some(a => uaN === a);
   }
   if(q.type==="en-fr") {
     return normStrict(ua)===normStrict(ans);
