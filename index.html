@@ -708,15 +708,8 @@ function keyVerbPresent(verbFr, pronoun) {
   return pronoun + " " + conj;
 }
 
-// Add -s/-es for 3rd person singular present
-function thirdPersonS(verb) {
-  // verb is the bare English verb (no "to")
-  if (/[sxzh]$/.test(verb) || /[aeiou]h$/.test(verb)) return verb + "es"; // watches, does, goes
-  if (/[^aeiou]y$/.test(verb)) return verb.slice(0,-1) + "ies"; // carries
-  return verb + "s";
-}
-
 const THIRD_SG = ["il","elle"];
+
 const NEAR_FUT_AUX = {
   je:"am going to", tu:"are going to",
   il:"is going to", elle:"is going to",
@@ -724,37 +717,68 @@ const NEAR_FUT_AUX = {
   ils:"are going to", elles:"are going to"
 };
 
-// English phrase for full conjugation questions
-function engPhrase(verb, pronoun, tense) {
-  const pr = EN_PR[pronoun];
-  const base = verb.en.replace(/^to /, "").split(" / ")[0].trim();
-  if (tense==="present") {
-    if (THIRD_SG.includes(pronoun)) {
-      const words = base.split(" ");
-      words[0] = thirdPersonS(words[0]);
-      return pr + " " + words.join(" ");
-    }
-    return pr + " " + base;
-  }
-  if (tense==="nearfuture") return pr + " " + NEAR_FUT_AUX[pronoun] + " " + base;
-  if (tense==="pc") {
-    // simple past: "I talked"
-    const words = base.split(" ");
-    words[0] = toPastEng(words[0]);
-    return pr + " " + words.join(" ");
-  }
+// Add -s/-es for 3rd person singular present (bare verb stem only)
+function thirdPersonS(verb) {
+  if (verb === "go")  return "goes";
+  if (verb === "do")  return "does";
+  if (/(?:ch|sh|[sxz])$/.test(verb)) return verb + "es"; // watches, washes, buzzes
+  if (/[^aeiou]y$/.test(verb)) return verb.slice(0,-1) + "ies"; // study → studies
+  return verb + "s";
 }
 
+// Reflexive pronoun for English, matching subject
+const REFL_PR = {
+  je:"myself", tu:"yourself", il:"himself", elle:"herself",
+  nous:"ourselves", vous:"yourselves", ils:"themselves", elles:"themselves"
+};
+
+// Past tenses — irregular forms + words that double their final consonant
 const IRREG_PAST_ENG = {
-  eat:"ate",swim:"swam",buy:"bought",give:"gave",
-  wear:"wore",carry:"carried"
+  // true irregulars
+  speak:"spoke", eat:"ate", swim:"swam", buy:"bought", give:"gave",
+  wear:"wore",   get:"got", put:"put",   run:"ran",    sing:"sang",
+  // regular but doubles final consonant (stressed CVC, single syllable or stress on last)
+  chat:"chatted", prefer:"preferred", stop:"stopped"
 };
 function toPastEng(word) {
   if (IRREG_PAST_ENG[word]) return IRREG_PAST_ENG[word];
-  if (word.endsWith("e")) return word + "d";
-  if (/[^aeiou]y$/.test(word)) return word.slice(0,-1) + "ied";
-  // double consonant for CVC?
+  if (word.endsWith("e")) return word + "d";               // live→lived, love→loved
+  if (/[^aeiou]y$/.test(word)) return word.slice(0,-1) + "ied"; // study→studied
   return word + "ed";
+}
+
+// Strip the "(oneself)" / "(in)" style bracket from a base and replace with subject-specific reflexive
+function resolveReflBracket(base, pronoun) {
+  // Only reflexive verbs have "(oneself)" — replace with the correct pronoun
+  return base.replace(/\(oneself\)/g, "(" + REFL_PR[pronoun] + ")");
+}
+
+// English phrase for full conjugation questions
+function engPhrase(verb, pronoun, tense) {
+  const pr = EN_PR[pronoun];
+  // Take the first alternative (before " / "), strip "to "
+  let base = verb.en.replace(/^to /, "").split(" / ")[0].trim();
+  // Resolve "(oneself)" to subject-specific form
+  if (verb.refl) base = resolveReflBracket(base, pronoun);
+
+  if (tense === "present") {
+    if (THIRD_SG.includes(pronoun)) {
+      // Apply -s to the first word (the verb stem); leave any bracketed remainder intact
+      const firstWord = base.split(" ")[0];
+      const rest = base.slice(firstWord.length);
+      return pr + " " + thirdPersonS(firstWord) + rest;
+    }
+    return pr + " " + base;
+  }
+  if (tense === "nearfuture") {
+    // Near future uses bare infinitive — no -s needed
+    return pr + " " + NEAR_FUT_AUX[pronoun] + " " + base;
+  }
+  if (tense === "pc") {
+    const firstWord = base.split(" ")[0];
+    const rest = base.slice(firstWord.length);
+    return pr + " " + toPastEng(firstWord) + rest;
+  }
 }
 
 // Key verb English prompts for mode 2
